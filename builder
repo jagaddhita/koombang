@@ -12,25 +12,18 @@ curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/rep
 echo "export USE_CCACHE=1" >> ~/.bashrc
 echo "export PATH=~/bin:$PATH" >> ~/.bashrc
 source ~/.bashrc
-# Prepair Compressed Source
-wget --progress=bar https://nl1.androidfilehost.com/dl/0ehoBmTX8MV3fMb7KeUA8Q/1488412447/24591000424963926/CyanogenMod-cm-11.0-no-repo-20160907.tar.xz
-tar -xvJf CyanogenMod-cm-11.0-no-repo-20160907.tar.xz &> /dev/null
-cd CyanogenMod-cm-11.0-no-repo-20160907
-repo sync -l &> /dev/null
-# Download Device Tree
-git clone -b cm-11.0 --single-branch https://github.com/Nokia-xl-legacy/android_kernel_nokia_msm8625.git kernel/nokia/normandy &> /dev/null
+# Saus
+mkdir nusan
+cd nusan
+repo init --depth=1 -u https://github.com/NusantaraProject-ROM/android_manifest -b 10 -g default,-device,-mips,-darwin,-notdefault &> /dev/null 
+repo sync -c --force-sync --no-tags --no-clone-bundle &> /dev/null 
+# Tree
+git clone -b cm-11.0 --single-branch https://github.com/Nokia-xl-legacy/android_kernel_nokia_msm8625.git kernel/nokia/normandy &> /dev/null 
 git clone https://github.com/Nokia-xl-legacy/device_xl.git device/nokia/xl &> /dev/null 
 git clone https://github.com/Nokia-xl-legacy/vendor_xl.git vendor/nokia &> /dev/null 
-rm -rf bootable/recovery && git clone -b android-5.1 --single-branch https://github.com/omnirom/android_bootable_recovery.git bootable/recovery &> /dev/null
-rm -rf hardware/ril && git clone -b cm-11.0 --single-branch https://github.com/Nokia-xl-legacy/hardware_ril.git hardware/ril &> /dev/null
-rm -rf hardware/qcom/gps && git clone https://github.com/Nokia-xl-legacy/android_hardware_qcom_gps.git hardware/qcom/gps &> /dev/null 
-rm -rf hardware/qcom/media-legacy && git clone -b kitkat --single-branch https://github.com/Nokia-xl-legacy/android_hardware_qcom_media-legacy.git hardware/qcom/media-legacy &> /dev/null 
-rm -rf external/webkit && git clone https://github.com/Nokia-xl-legacy/android_external_webkit.git external/webkit &> /dev/null
-rm -rf hardware/qcom/display-legacy && git clone https://github.com/Nokia-xl-legacy/android_hardware_qcom_display-legacy.git hardware/qcom/display-legacy &> /dev/null
-rm -rf hardware/atheros/wlan && git clone https://github.com/Nokia-xl-legacy/android_hardware_atheros_wlan.git -b cm-11.0 --single-branch hardware/atheros/wlan &> /dev/null
-rm -rf hardware/atheros/wifi && git clone https://github.com/Nokia-xl-legacy/android_hardware_atheros_wifi_ath6kl-huawei.git hardware/atheros/wifi &> /dev/null 
-# Edit device tree
+# Edit tree
 cd patches && chmod 775 apply.sh && ./apply.sh
-cd ~/android
+cd ~/nusan
 . build/envsetup.sh
-brunch xl
+lunch nad_ulysse-userdebug
+mka nad -j
